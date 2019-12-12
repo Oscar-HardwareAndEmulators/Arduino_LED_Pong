@@ -1,45 +1,28 @@
 /*
-  Colorduino - Colorduino DEMO for Arduino.
-  Copyright (c) 2010 zzy@IteadStudio.  All right reserved.
-
-  This DEMO is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
-
-  This DEMO is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+Oscar Martinez
+CS 281
+Final Project
 */
+
+
 #include "RGBMatrix.h"
-/*****************************
-define the operate commands
-*****************************/
 
-/*****************************
-define the status
-*****************************/
 
-/*****************************
-define the IO
-*****************************/
+//************************** define the operate commands ***********************
 #define RST_BIT 0x04
 #define LAT_BIT 0x02
 #define SLB_BIT 0x01
 #define SCL_BIT 0x40
 #define SDA_BIT 0x80
 
+//****************************** define the status *****************************
 #define RST PORTC
 #define LAT PORTC
 #define SLB PORTC
 #define SDA PORTD
 #define SCL PORTD
 
+//******************************** define the IO *******************************
 #define open_line0	{PORTB=0x01;}
 #define open_line1	{PORTB=0x02;}
 #define open_line2	{PORTB=0x04;}
@@ -65,6 +48,7 @@ unsigned char Tdots[8][8][3]=     {{{0,0,255},     {0,0,255},      {0,0,255},   
                                   {{255,255,255}, {255,255,255},  {255,255,255}, {255,255,255},{255,255,255},  {255,255,255},   {255,255,255},    {255,255,255}}
                                  };
 */
+
 unsigned char dots[2][8][8][3] = {0};
 //dots matrix
 //[2]:Page:one for display, one for receive data
@@ -81,25 +65,28 @@ unsigned char color = 0;//the value of every dots, 0 is Red, 1 is Green, 2 is Bl
 
 unsigned char line = 0;
 
-/**************************************************
-define the extern data zone
-**************************************************/
+// *********************** define the extern data zone *************************
 extern unsigned char font8_8[92][8];
 extern unsigned char pic[4][8][8][3];
-/***************************************************
-all parts inition functions zone
-***************************************************/
+
+
+// ============================== Set Gamma Method =============================
 void _IO_Init()
+// input output intion
 {
   DDRD = 0xff; // set all pins direction of PortD
   DDRC = 0xff; // set all pins direction of PortC
   DDRB = 0xff; // set all pins direction of PortB
-  
+
   PORTD = 0x00; // set all pins output is low of PortD
   PORTC = 0x00; // set all pins output is low of PortC
   PORTB = 0x00; // set all pins output is low of PortB
 }
+
+
+// ============================== Set Gamma Method =============================
 void _LED_Init()
+//
 {
   LED_RST(1);
   LED_Delay(1);
@@ -107,14 +94,17 @@ void _LED_Init()
   LED_Delay(1);
   LED_RST(1);
   LED_Delay(1);
-  
+
   SetGamma();
   line = 0;
-  
 }
+
+
+// ============================== Set Gamma Method =============================
 void _TC2_Init()
+// the timer2 operate functions zone
 {
-  TCCR2A |= (1 << WGM21) | (1 << WGM20);   
+  TCCR2A |= (1 << WGM21) | (1 << WGM20);
   TCCR2B |= ((1<<CS22)|(1<<CS20));   // by clk/64
   TCCR2B &= ~((1<<CS21));   // by clk/64
   TCCR2A &= ~((1<<WGM21) | (1<<WGM20));   // Use normal mode
@@ -124,73 +114,91 @@ void _TC2_Init()
   sei();
 }
 
+
+// ============================== Set Gamma Method =============================
 void RGBMatrixInit()
+//Matrix init
 {
 	_IO_Init();           //Init IO
 	_LED_Init();          //Init LED Hardware
 	_TC2_Init();          //Init Timer/Count2
 }
-/****************************************************
-the timer2 operate functions zone
-****************************************************/
-ISR(TIMER2_OVF_vect)          //Timer2  Service 
-{ 
-  cli();  
+
+
+// ============================== Set Gamma Method =============================
+ISR(TIMER2_OVF_vect)
+// the timer2 operate functions zone
+{
+  cli();
   TCNT2 = 0x64;      //flash a led matrix frequency is 100.3Hz,period is 9.97ms
-  //TCNT2 = 0x63;      //flash a led matrix frequency is 99.66Hz,period is 10.034ms   
-    if(line > 7) line = 0;    
-    close_all_line;  
+  //TCNT2 = 0x63;      //flash a led matrix frequency is 99.66Hz,period is 10.034ms
+    if(line > 7) line = 0;
+    close_all_line;
     run(line);
     open_line(line);
     line++;
     sei();
 }
-/****************************************************
-the LED Hardware operate functions zone
-****************************************************/
+
+
+// ============================== Set Gamma Method =============================
 void LED_SDA(unsigned char temp)
+// the LED Hardware operate functions zone
 {
-  if (temp) 
+  if (temp)
     SDA|=SDA_BIT;
   else
     SDA&=~SDA_BIT;
 }
 
+
+// ============================== Set Gamma Method =============================
 void LED_SCL(unsigned char temp)
+//
 {
-  if (temp) 
+  if (temp)
     SCL|=SCL_BIT;
   else
     SCL&=~SCL_BIT;
 }
 
+
+// ============================== Set Gamma Method =============================
 void LED_RST(unsigned char temp)
+//
 {
-  if (temp) 
+  if (temp)
     RST|=RST_BIT;
   else
     RST&=~RST_BIT;
 }
 
+
+// ============================== Set Gamma Method =============================
 void LED_LAT(unsigned char temp)
+//
 {
-  if (temp) 
+  if (temp)
     LAT|=LAT_BIT;
   else
     LAT&=~LAT_BIT;
 }
 
+
+// ============================== Set Gamma Method =============================
 void LED_SLB(unsigned char temp)
+//
 {
-  if (temp) 
+  if (temp)
     SLB|=SLB_BIT;
   else
     SLB&=~SLB_BIT;
 }
-/***************************************************
-the LED datas operate functions zone
-***************************************************/
+
+
+// ============================== Set Gamma Method =============================
 void SetGamma()
+// the LED datas operate functions zone
 {
   unsigned char i = 0;
   unsigned char j = 0;
@@ -208,7 +216,7 @@ void SetGamma()
           LED_SDA(1);
         else
           LED_SDA(0);
-        
+
         temp =temp << 1;
         LED_SCL(0);
         LED_SCL(1);
@@ -216,7 +224,11 @@ void SetGamma()
   }
   LED_SLB(1);
 }
+
+
+// ============================== Set Gamma Method =============================
 void run(unsigned char k)
+//
 {
   unsigned char i = 0;
   unsigned char j = 0;
@@ -226,7 +238,7 @@ void run(unsigned char k)
   LED_LAT(0);
   for(i = 0;i<8;i++)
   {
-    
+
     for(j=0;j<3;j++)
     {
       temp = dots[Page_Index][k][i][2-j];
@@ -236,8 +248,8 @@ void run(unsigned char k)
            LED_SDA(1);
          else
            LED_SDA(0);
-           
-         temp = temp<<1;  
+
+         temp = temp<<1;
          LED_SCL(0);
          LED_SCL(1);
        }
@@ -246,10 +258,14 @@ void run(unsigned char k)
   LED_LAT(1);
   LED_LAT(0);
 }
+
+
+// ============================== Set Gamma Method =============================
 void open_line(unsigned char x)
+//
 {
   switch (x)
-  {  
+  {
     case 0 :open_line0;
             break;
     case 1 :open_line1;
@@ -270,27 +286,26 @@ void open_line(unsigned char x)
             break;
   }
 }
-/********************************************************
-Name:DispShowChar
-Function:Display a English latter in LED matrix
-Parameter:chr :the latter want to show
-          R: the value of RED.   Range:RED 0~255
-          G: the value of GREEN. Range:RED 0~255
-          B: the value of BLUE.  Range:RED 0~255
-          bias: the bias of a letter in LED Matrix.Range -7~7
-********************************************************/
+
+
+// ============================== Set Gamma Method =============================
 void DispShowChar(char chr,unsigned char R,unsigned char G,unsigned char B,char bias)
+// Parameter: chr :the latter want to show
+//            R: the value of RED.   Range:RED 0~255
+//            G: the value of GREEN. Range:RED 0~255
+//            B: the value of BLUE.  Range:RED 0~255
+//            bias: the bias of a letter in LED Matrix.Range -7~7
 {
   unsigned char i,j,Page_Write,temp;
   unsigned char Char;
   unsigned char chrtemp[24] = {0};
-  
+
   if ((bias > 8) || (bias < -8))
     return;
-    
-  
+
+
   Char = chr - 32;
-  
+
   if(Page_Index == 0)
     Page_Write = 1;
   if(Page_Index == 1)
@@ -298,12 +313,12 @@ void DispShowChar(char chr,unsigned char R,unsigned char G,unsigned char B,char 
   j = 8 - bias;
   for(i = 0;i< 8;i++)
   {
-    chrtemp[j] = pgm_read_byte(&(font8_8[Char][i]));    
+    chrtemp[j] = pgm_read_byte(&(font8_8[Char][i]));
     j++;
-  }  
+  }
   for(i = 0;i < 8;i++)
   {
-    
+
     temp = chrtemp[i+8];
     for(j = 0;j < 8;j++)
     {
@@ -322,24 +337,23 @@ void DispShowChar(char chr,unsigned char R,unsigned char G,unsigned char B,char 
       temp = temp << 1;
     }
   }
-  Page_Index = Page_Write;  
+  Page_Index = Page_Write;
 }
-/********************************************************
-Name:DispShowColor
-Function:Fill a color in LED matrix
-Parameter:R: the value of RED.   Range:RED 0~255
-          G: the value of GREEN. Range:RED 0~255
-          B: the value of BLUE.  Range:RED 0~255
-********************************************************/
+
+
+// ============================== Set Gamma Method =============================
 void DispShowColor(unsigned char R,unsigned char G,unsigned char B)
+// Parameter:R: the value of RED.   Range:RED 0~255
+//           G: the value of GREEN. Range:RED 0~255
+//           B: the value of BLUE.  Range:RED 0~255
 {
   unsigned char Page_Write,i,j;
-  
+
   if(Page_Index == 0)
     Page_Write = 1;
   if(Page_Index == 1)
     Page_Write = 0;
-    
+
   for (i = 0;i<8;i++)
     for(j = 0;j<8;j++)
     {
@@ -347,42 +361,42 @@ void DispShowColor(unsigned char R,unsigned char G,unsigned char B)
       dots[Page_Write][i][j][1] = G;
       dots[Page_Write][i][j][0] = B;
     }
-  
+
   Page_Index = Page_Write;
 }
-/********************************************************
-Name:DispShowPic
-Function:Fill a picture in LED matrix from FLASH
-Parameter:Index:the index of picture in Flash.
-********************************************************/
+
+
+// ============================== Set Gamma Method =============================
 void DispShowPic(unsigned char Index)
+//Function:Fill a picture in LED matrix from FLASH
+//Parameter:Index:the index of picture in Flash.
 {
   unsigned char Page_Write,i,j;
-  
+
   if(Page_Index == 0)
     Page_Write = 1;
   if(Page_Index == 1)
     Page_Write = 0;
-    
+
   for (i = 0;i<8;i++)
   {
-    
+
     for(j = 0;j<8;j++)
     {
-      
+
       dots[Page_Write][i][j][0] = pgm_read_byte(&(pic[Index][i][j][2]));
       dots[Page_Write][i][j][1] = pgm_read_byte(&(pic[Index][i][j][1]));
       dots[Page_Write][i][j][2] = pgm_read_byte(&(pic[Index][i][j][0]));
     }
   }
   Page_Index = Page_Write;
-  
+
 }
 
-/******************************************
-the other operate functions zone
-******************************************/
+
+// ============================== Set Gamma Method =============================
 void LED_Delay(unsigned char i)
+//the other operate functions zone
 {
   unsigned int y;
   y = i * 10;
