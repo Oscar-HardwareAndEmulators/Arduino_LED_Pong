@@ -70,7 +70,7 @@ extern unsigned char font8_8[92][8];
 extern unsigned char pic[4][8][8][3];
 
 
-// ============================== Set Gamma Method =============================
+// =============================== IO Init Method ==============================
 void _IO_Init()
 // input output intion
 {
@@ -84,7 +84,7 @@ void _IO_Init()
 }
 
 
-// ============================== Set Gamma Method =============================
+// =============================== LED Init Method =============================
 void _LED_Init()
 //
 {
@@ -100,7 +100,7 @@ void _LED_Init()
 }
 
 
-// ============================== Set Gamma Method =============================
+// ================================= TC2 Method ================================
 void _TC2_Init()
 // the timer2 operate functions zone
 {
@@ -115,7 +115,7 @@ void _TC2_Init()
 }
 
 
-// ============================== Set Gamma Method =============================
+// ============================== RGBMatrix Method =============================
 void RGBMatrixInit()
 //Matrix init
 {
@@ -125,7 +125,7 @@ void RGBMatrixInit()
 }
 
 
-// ============================== Set Gamma Method =============================
+// ================================ ISR Method =================================
 ISR(TIMER2_OVF_vect)
 // the timer2 operate functions zone
 {
@@ -141,7 +141,7 @@ ISR(TIMER2_OVF_vect)
 }
 
 
-// ============================== Set Gamma Method =============================
+// =============================== LED SDA Method ==============================
 void LED_SDA(unsigned char temp)
 // the LED Hardware operate functions zone
 {
@@ -152,7 +152,7 @@ void LED_SDA(unsigned char temp)
 }
 
 
-// ============================== Set Gamma Method =============================
+// =============================== LED SCL Method ==============================
 void LED_SCL(unsigned char temp)
 //
 {
@@ -163,7 +163,7 @@ void LED_SCL(unsigned char temp)
 }
 
 
-// ============================== Set Gamma Method =============================
+// =============================== LED RST Method ==============================
 void LED_RST(unsigned char temp)
 //
 {
@@ -174,7 +174,7 @@ void LED_RST(unsigned char temp)
 }
 
 
-// ============================== Set Gamma Method =============================
+// ================================ LED LAT Method =============================
 void LED_LAT(unsigned char temp)
 //
 {
@@ -185,7 +185,7 @@ void LED_LAT(unsigned char temp)
 }
 
 
-// ============================== Set Gamma Method =============================
+// ================================ LED SLB Method =============================
 void LED_SLB(unsigned char temp)
 //
 {
@@ -226,7 +226,7 @@ void SetGamma()
 }
 
 
-// ============================== Set Gamma Method =============================
+// ================================ Run Method =================================
 void run(unsigned char k)
 //
 {
@@ -260,7 +260,7 @@ void run(unsigned char k)
 }
 
 
-// ============================== Set Gamma Method =============================
+// ============================== Open Line Method =============================
 void open_line(unsigned char x)
 //
 {
@@ -288,8 +288,8 @@ void open_line(unsigned char x)
 }
 
 
-// ============================== Set Gamma Method =============================
-void DispShowChar(char chr,unsigned char R,unsigned char G,unsigned char B,char bias)
+// ============================== Draw Char Method =============================
+void drawChar(char chr,unsigned char R,unsigned char G,unsigned char B,char bias)
 // Parameter: chr :the latter want to show
 //            R: the value of RED.   Range:RED 0~255
 //            G: the value of GREEN. Range:RED 0~255
@@ -341,8 +341,149 @@ void DispShowChar(char chr,unsigned char R,unsigned char G,unsigned char B,char 
 }
 
 
-// ============================== Set Gamma Method =============================
-void DispShowColor(unsigned char R,unsigned char G,unsigned char B)
+// ============================== Draw Char Method =============================
+void drawMultChar(char chr,unsigned char R,unsigned char G,unsigned char B,char bias)
+// Parameter: chr :the latter want to show
+//            R: the value of RED.   Range:RED 0~255
+//            G: the value of GREEN. Range:RED 0~255
+//            B: the value of BLUE.  Range:RED 0~255
+//            bias: the bias of a letter in LED Matrix.Range -7~7
+{
+
+}
+
+
+// ============================= Draw Paddle Method ============================
+void drawPaddle1(int P1_y, int P1_x, unsigned char R,unsigned char G,unsigned char B,char bias)
+// Parameter: chr :the latter want to show
+//            R: the value of RED.   Range:RED 0~255
+//            G: the value of GREEN. Range:RED 0~255
+//            B: the value of BLUE.  Range:RED 0~255
+//            bias: the bias of a letter in LED Matrix.Range -7~7
+{
+  unsigned char Page_Write;
+
+  if ((bias > 8) || (bias < -8))
+    return;
+
+  if(Page_Index == 0)
+    Page_Write = 1;
+  if(Page_Index == 1)
+    Page_Write = 0;
+
+  dots[Page_Write][P1_y][P1_x][0] = B;
+  dots[Page_Write][P1_y][P1_x][1] = G;
+  dots[Page_Write][P1_y][P1_x][2] = R;
+
+  Page_Index = Page_Write;
+
+  //dots matrix
+  // unsigned char dots[2][8][8][3] = {0};
+  // [2]:Page:one for display, one for receive data
+  // [8]:Row:8 row in LED plane
+  // [8]:Column:8 column in one row
+  // [3]:Color:RGB data: 0 for Red; 1 for green, 2 for Blue
+}
+
+
+// ============================= Draw Paddle Method ============================
+void drawPaddle2(int P2_y, int P2_x, unsigned char R,unsigned char G,unsigned char B,char bias)
+// Parameter: chr :the latter want to show
+//            R: the value of RED.   Range:RED 0~255
+//            G: the value of GREEN. Range:RED 0~255
+//            B: the value of BLUE.  Range:RED 0~255
+//            bias: the bias of a letter in LED Matrix.Range -7~7
+{
+  unsigned char Page_Write;
+
+  if ((bias > 8) || (bias < -8))
+    return;
+
+  if(Page_Index == 0)
+    Page_Write = 1;
+  if(Page_Index == 1)
+    Page_Write = 0;
+
+  dots[Page_Write][P2_y][P2_x][0] = B;
+  dots[Page_Write][P2_y][P2_x][1] = G;
+  dots[Page_Write][P2_y][P2_x][2] = R;
+
+  Page_Index = Page_Write;
+
+  //dots matrix
+  // unsigned char dots[2][8][8][3] = {0};
+  // [2]:Page:one for display, one for receive data
+  // [8]:Row:8 row in LED plane
+  // [8]:Column:8 column in one row
+  // [3]:Color:RGB data: 0 for Red; 1 for green, 2 for Blue
+}
+
+
+// ============================== Draw Ball Method =============================
+void drawBall(int B_y, int B_x, unsigned char R,unsigned char G,unsigned char B,char bias)
+// Parameter: chr :the latter want to show
+//            R: the value of RED.   Range:RED 0~255
+//            G: the value of GREEN. Range:RED 0~255
+//            B: the value of BLUE.  Range:RED 0~255
+//            bias: the bias of a letter in LED Matrix.Range -7~7
+{
+  unsigned char Page_Write;
+
+  if ((bias > 8) || (bias < -8))
+    return;
+
+  dots[Page_Write][B_y][B_x][0] = B;
+  dots[Page_Write][B_y][B_x][1] = G;
+  dots[Page_Write][B_y][B_x][2] = R;
+}
+
+
+// ============================= Game Start Method =============================
+void gameStart(char bias)
+// Parameter: bias: the bias of a letter in LED Matrix.Range -7~7
+{
+  unsigned char i,j,Page_Write,temp;
+  unsigned char Char;
+  unsigned char chrtemp[24] = {0};
+  unsigned char R = 0;
+  unsigned char G = 255;
+  unsigned char B = 0;
+
+  if ((bias > 8) || (bias < -8))
+    return;
+
+  dispShowColor(R, G, B);
+  LED_Delay(2);
+  drawChar('3', R, G, B, bias);
+  LED_Delay(1);
+  drawChar('2', R, G, B, bias);
+  LED_Delay(1);
+  drawChar('1', R, G, B, bias);
+}
+
+
+// ============================== Game Over Method =============================
+void gameOver(char bias)
+// Parameter: bias: the bias of a letter in LED Matrix.Range -7~7
+{
+  unsigned char Page_Write;
+  unsigned char R = 255;
+  unsigned char G = 0;
+  unsigned char B = 0;
+
+  if ((bias > 8) || (bias < -8))
+    return;
+
+  dispShowColor(R, G, B);
+  LED_Delay(2);
+  drawChar('G', R, G, B, bias);
+  LED_Delay(1);
+  drawChar('G', 0, 255, 0, bias);  //Makes second G green to differentiate. GG = good game
+}
+
+
+// =========================== Disp Show Color Method ==========================
+void dispShowColor(unsigned char R,unsigned char G,unsigned char B)
 // Parameter:R: the value of RED.   Range:RED 0~255
 //           G: the value of GREEN. Range:RED 0~255
 //           B: the value of BLUE.  Range:RED 0~255
@@ -366,8 +507,8 @@ void DispShowColor(unsigned char R,unsigned char G,unsigned char B)
 }
 
 
-// ============================== Set Gamma Method =============================
-void DispShowPic(unsigned char Index)
+// ============================ Disp Show Pic Method ===========================
+void dispShowPic(unsigned char Index)
 //Function:Fill a picture in LED matrix from FLASH
 //Parameter:Index:the index of picture in Flash.
 {
@@ -394,7 +535,7 @@ void DispShowPic(unsigned char Index)
 }
 
 
-// ============================== Set Gamma Method =============================
+// ============================== LED Delay Method =============================
 void LED_Delay(unsigned char i)
 //the other operate functions zone
 {

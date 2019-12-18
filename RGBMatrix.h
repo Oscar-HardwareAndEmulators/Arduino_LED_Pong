@@ -10,11 +10,20 @@ Final Project
 
 #include "Arduino.h"
 
-
 void RGBMatrixInit();
-void DispShowChar(char chr,unsigned char R,unsigned char G,unsigned char B,char bias);
-void DispShowColor(unsigned char R,unsigned char G,unsigned char B);
-void DispShowPic(unsigned char Index);
+
+void drawChar(char chr,unsigned char R,unsigned char G,unsigned char B,char bias);
+void drawMultChar(char chr,unsigned char R,unsigned char G,unsigned char B,char bias);
+
+void drawPaddle1(int P1_y, int P1_x, unsigned char R,unsigned char G,unsigned char B,char bias);
+void drawPaddle2(int P2_y, int P2_x, unsigned char R,unsigned char G,unsigned char B,char bias);
+void drawBall(int B_y, int B_x, unsigned char R,unsigned char G,unsigned char B, char bias);
+
+void gameStart(char bias);
+void gameOver(char bias);
+
+void dispShowColor(unsigned char R,unsigned char G,unsigned char B);
+void dispShowPic(unsigned char Index);
 
 
 
